@@ -1,0 +1,61 @@
+.font-heading {
+  font-family: 'Manrope', sans-serif;
+}
+
+.font-body {
+  font-family: 'Inter', sans-serif;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Status colors */
+.status-safe {
+  @apply bg-emerald-50 text-emerald-700 border-emerald-200;
+}
+
+.dark .status-safe {
+  @apply bg-emerald-900/30 text-emerald-300 border-emerald-800;
+}
+
+.status-warning {
+  @apply bg-amber-50 text-amber-700 border-amber-200;
+}
+
+.dark .status-warning {
+  @apply bg-amber-900/30 text-amber-300 border-amber-800;
+}
+
+.status-expired {
+  @apply bg-red-50 text-red-700 border-red-200;
+}
+
+.dark .status-expired {
+  @apply bg-red-900/30 text-red-300 border-red-800;
+}
+
+/* Glass effect */
+.glass {
+  @apply backdrop-blur-xl bg-white/70 border-white/20;
+}
+
+.dark .glass {
+  @apply bg-slate-900/70;
+}

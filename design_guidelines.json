@@ -1,0 +1,152 @@
+{
+  "identity": {
+    "persona": "E1 - The Anti-AI Designer",
+    "tone": "Professional, Calm, Reliable, Clean",
+    "archetype": "The Performance Pro mixed with Organic Earthy"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "scale": {
+      "h1": "text-4xl md:text-5xl font-bold tracking-tight",
+      "h2": "text-3xl font-semibold tracking-tight",
+      "h3": "text-2xl font-semibold",
+      "body": "text-base leading-relaxed text-slate-600 dark:text-slate-400",
+      "small": "text-sm font-medium text-slate-500"
+    },
+    "usage_rules": {
+      "headings": "Use Manrope for all headings (h1-h3) and data metrics (big numbers).",
+      "body": "Use Inter for all long-form text, tables, and inputs.",
+      "numbers": "Use tabular-nums class for all data grids and timers to prevent jitter."
+    }
+  },
+  "colors": {
+    "palette": {
+      "light": {
+        "background": "210 40% 98%",
+        "foreground": "222 47% 11%",
+        "card": "0 0% 100%",
+        "card_foreground": "222 47% 11%",
+        "popover": "0 0% 100%",
+        "popover_foreground": "222 47% 11%",
+        "primary": "222 47% 11%",
+        "primary_foreground": "210 40% 98%",
+        "secondary": "210 40% 96.1%",
+        "secondary_foreground": "222 47% 11%",
+        "muted": "210 40% 96.1%",
+        "muted_foreground": "215.4 16.3% 46.9%",
+        "accent": "210 40% 96.1%",
+        "accent_foreground": "222 47% 11%",
+        "destructive": "0 84.2% 60.2%",
+        "destructive_foreground": "210 40% 98%",
+        "border": "214.3 31.8% 91.4%",
+        "input": "214.3 31.8% 91.4%",
+        "ring": "222 47% 11%"
+      },
+      "dark": {
+        "background": "222 47% 11%",
+        "foreground": "210 40% 98%",
+        "card": "222 47% 11%",
+        "card_foreground": "210 40% 98%",
+        "popover": "222 47% 11%",
+        "popover_foreground": "210 40% 98%",
+        "primary": "210 40% 98%",
+        "primary_foreground": "222 47% 11%",
+        "secondary": "217.2 32.6% 17.5%",
+        "secondary_foreground": "210 40% 98%",
+        "muted": "217.2 32.6% 17.5%",
+        "muted_foreground": "215 20.2% 65.1%",
+        "accent": "217.2 32.6% 17.5%",
+        "accent_foreground": "210 40% 98%",
+        "destructive": "0 62.8% 30.6%",
+        "destructive_foreground": "210 40% 98%",
+        "border": "217.2 32.6% 17.5%",
+        "input": "217.2 32.6% 17.5%",
+        "ring": "212.7 26.8% 83.9%"
+      },
+      "semantic": {
+        "success": "#10B981",
+        "warning": "#F59E0B",
+        "danger": "#EF4444",
+        "info": "#3B82F6"
+      }
+    },
+    "gradients": {
+      "soft_surface": "bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-950",
+      "active_border": "bg-gradient-to-r from-emerald-500 to-teal-500"
+    }
+  },
+  "layout": {
+    "grid_system": {
+      "dashboard_mode": "Bento Grid Mode B (High Density)",
+      "columns": "grid-cols-1 md:grid-cols-3 lg:grid-cols-4",
+      "gap": "gap-6",
+      "padding": "p-6 md:p-8"
+    },
+    "structure": {
+      "sidebar": "Fixed width (240px), sticky, glassmorphism effect.",
+      "header": "Sticky top, backdrop-blur-md, clean with search and user profile.",
+      "main_content": "Max-width 1600px, centered if wider."
+    },
+    "containers": {
+      "card": "rounded-xl border bg-card text-card-foreground shadow-sm hover:shadow-md transition-all duration-200",
+      "modal": "rounded-2xl shadow-2xl border-0"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "h-10 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all shadow-sm",
+      "secondary": "h-10 px-4 py-2 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80",
+      "ghost": "hover:bg-accent hover:text-accent-foreground"
+    },
+    "inputs": {
+      "default": "h-10 rounded-lg border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all focus:border-primary/50"
+    },
+    "status_badges": {
+      "safe": "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800",
+      "warning": "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800",
+      "expired": "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800"
+    }
+  },
+  "visual_enhancers": {
+    "shadows": {
+      "soft": "shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
+      "float": "shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+    },
+    "borders": {
+      "subtle": "border-slate-200/60 dark:border-slate-800/60"
+    },
+    "glass": "backdrop-blur-xl bg-white/70 dark:bg-slate-900/70 border-b border-white/20"
+  },
+  "accessibility": {
+    "contrast": "Ensure text is slate-600 or darker on white backgrounds. Use slate-400 for secondary text.",
+    "focus_states": "Visible focus rings on all interactive elements.",
+    "motion": "Respect prefers-reduced-motion."
+  },
+  "image_urls": {
+    "hero_shelf": "https://images.unsplash.com/photo-1631367771698-606007aecd52?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwxfHxncm9jZXJ5JTIwc3RvcmUlMjBzaGVsZiUyMG1pbmltYWxpc3RpY3xlbnwwfHx8fDE3NzIxNTk1NjB8MA&ixlib=rb-4.1.0&q=85",
+    "fresh_produce": "https://images.unsplash.com/photo-1700150618387-3f46b6d2cf8e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NDh8MHwxfHNlYXJjaHwxfHxmcmVzaCUyMHByb2R1Y2UlMjBoZWFsdGh5JTIwZm9vZCUyMG1pbmltYWxpc3RpY3xlbnwwfHx8fDE3NzIxNTk1NjF8MA&ixlib=rb-4.1.0&q=85",
+    "empty_state_box": "https://images.unsplash.com/photo-1608494132127-cfadf11a3889?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwc3RvcmUlMjBzaGVsZiUyMG1pbmltYWxpc3RpY3xlbnwwfHx8fDE3NzIxNTk1NjB8MA&ixlib=rb-4.1.0&q=85"
+  },
+  "instructions_to_main_agent": [
+    "Install 'lucide-react' for icons.",
+    "Install 'recharts' for the dashboard charts.",
+    "Install 'date-fns' for date handling.",
+    "Update 'tailwind.config.js' with the provided color variables.",
+    "Update 'index.css' with the CSS variables for light/dark themes.",
+    "Use 'Layout.js' as a wrapper component for the Sidebar and Header.",
+    "Implement the 'Bento Grid' for the Dashboard home page.",
+    "Use the 'status_badges' styles for the product list status column.",
+    "Ensure the 'Reports' page uses the 'recharts' library with the theme colors (chart-1 to chart-5)."
+  ],
+  "universal_guidelines": [
+    "Do not use generic gradients.",
+    "Use 2-3x more padding than usual.",
+    "Add data-testid to all interactive elements.",
+    "No centered text for long paragraphs.",
+    "Use skeleton loaders instead of spinners for initial load."
+  ]
+}
