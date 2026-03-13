@@ -1,6 +1,8 @@
 const Product = require('../models/productmodel');
 const mongoose = require('mongoose');
 
+
+
 //CREATE a new product
 const createProduct = async (req, res) => {
     const { name, quantity, expirationDate, category} = req.body;
@@ -104,4 +106,21 @@ const updateProduct = async (req, res) => {
   res.status(200).json(product)
 }
 
-module.exports = { createProduct, getProducts, getProduct, deleteProduct, updateProduct, getExpiringAlerts };
+//GET dashboard data
+const getDashboard = async (req, res) => {
+    try {
+        const today = new Date();
+        const warningDate = new Date();
+        warningDate.setDate(today.getDate() + 7);
+
+        //FIFO sort by expiration date
+        const allProducts = await Product.find().sort({ expirationDate: 1 });
+        
+        res.json({ expired: allProducts.filter(p => new Date(p.expirationDate) < today), warning: allProducts.filter(p => { const d = new Date(p.expirationDate); return d >= today && d <= warningDate }), 
+        all: allProducts });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+module.exports = { createProduct, getProducts, getProduct, deleteProduct, updateProduct, getExpiringAlerts, getDashboard };

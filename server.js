@@ -3,6 +3,8 @@ const express = require('express')
 const cors = require('cors')
 const mongoose = require('mongoose')
 const productsRoutes = require('./routes/products')
+const apiRoutes = require('./routes/api')
+
 
 //express app
 const app = express()
@@ -22,6 +24,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/products', productsRoutes)
+app.use('/api', apiRoutes)
 
 //connect to db
 mongoose.connect(process.env.MONGO_URI)
