@@ -1,3 +1,5 @@
+const fs = require('fs');
+const csv = require('fast-csv');
 const Product = require('../models/productmodel');
 const mongoose = require('mongoose');
 
@@ -122,5 +124,42 @@ const getDashboard = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+//UPLOAD CSV file
+const uploadCSV = async (req, res) => {
+  const file= req.file || req.files?.csvFile;
+  if (!file) {
+    return res.status(400).json({ message: 'No file uploaded, Please upload a CSV file' });
+  }
 
-module.exports = { createProduct, getProducts, getProduct, deleteProduct, updateProduct, getExpiringAlerts, getDashboard };
+  const products = [];
+  const filePath = file.path;
+
+  fs.createReadStream(filePath)
+  .pipe(csv.parse({ headers: true, trim: true }))
+  .on('data', (row) => {
+    if (row.name) {
+      products.push({
+        name: row.name,
+        price: parseFloat(row.price),
+        quantity: parseInt(row.quantity),
+        expirationDate: new Date(row.expirationDate),
+      category: row.category
+    });
+    }
+  })
+  .on('end', async () => {
+    try { 
+      if (products.length === 0) {
+        throw new Error("No valid products found in the CSV file");
+      }
+      await Product.insertMany(products);
+      fs.unlinkSync(filePath);
+      res.status(200).json({ message: 'Successfully uploaded and added products' });
+    } catch (error) {
+      res.status(500).json({ error: 'Error inserting products into database' });
+    }
+  })
+};
+      
+
+module.exports = { createProduct, getProducts, getProduct, deleteProduct, updateProduct, getExpiringAlerts, getDashboard, uploadCSV };

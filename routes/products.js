@@ -1,7 +1,23 @@
 const express = require('express');
-const{createProduct,getProducts,getProduct,deleteProduct,updateProduct,getExpiringAlerts,} = require('../controllers/productcontroller');
+const multer = require('multer');
+const path = require('path');
+const{createProduct,getProducts,getProduct,deleteProduct,updateProduct,getExpiringAlerts, uploadCSV} = require('../controllers/productcontroller');
 
 const router = express.Router();
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
+
+router.post('/uploads', upload.single('csvFile'), uploadCSV);
 
 
 //GET all products
