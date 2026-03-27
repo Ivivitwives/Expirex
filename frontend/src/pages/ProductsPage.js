@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
+import UploadCSV from '@/components/UploadCSV';
 import api from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -218,10 +219,33 @@ const ProductsPage = () => {
             <h1 className="text-3xl font-heading font-bold">Products</h1>
             <p className="text-muted-foreground mt-1">Manage your inventory and track expirations</p>
           </div>
-          <Button onClick={() => { setFormData({ name: '', quantity: 1, expirationDate: null, category: '' }); setFormError(''); setIsAddModalOpen(true); }} data-testid="add-product-btn">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Product
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => { 
+                setFormData({ name: '', quantity: 1, expirationDate: null, category: '' }); 
+                setFormError(''); 
+                setIsAddModalOpen(true); 
+              }}
+              data-testid="add-product-btn"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Product
+            </Button>
+
+            <UploadCSV 
+              onSuccess={() => {
+                alert('Products uploaded successfully!');
+                fetchProducts();
+              }}
+              onError={(error) => {
+                alert('Upload failed: ' + error);
+              }}
+            >
+              <Button className="bg-blue-500 hover:bg-blue-600 text-white">
+                Upload CSV
+              </Button>
+            </UploadCSV>
+          </div>
         </div>
 
         {/* Filters */}

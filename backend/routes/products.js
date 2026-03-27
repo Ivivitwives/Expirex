@@ -1,4 +1,5 @@
 const express = require('express');
+const multer = require('multer');
 const {
     createProduct,
     getProducts,
@@ -8,11 +9,14 @@ const {
     getExpiringAlerts,
     getDashboardSummary,
     getMonthlyReport,
-    getCategories
+    getCategories,
+    uploadCSV
 } = require('../controllers/productcontroller');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
+
+const upload = multer({ dest: 'uploads/' });
 
 // All routes require authentication
 router.use(auth);
@@ -28,6 +32,9 @@ router.get('/categories', getCategories);
 
 // GET expiration alerts
 router.get('/alerts', getExpiringAlerts);
+
+// POST csv
+router.post('/upload-csv', upload.single('csvFile'), uploadCSV);
 
 // GET all products
 router.get('/', getProducts);

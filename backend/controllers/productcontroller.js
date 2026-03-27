@@ -1,3 +1,5 @@
+const fs = require('fs');
+const csv = require('fast-csv');
 const Product = require('../models/productmodel');
 const mongoose = require('mongoose');
 
@@ -272,6 +274,64 @@ const getCategories = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+//UPLOAD CSV file
+const uploadCSV = async (req, res) => {
+    const file = req.file;
+
+    if (!file) {
+        return res.status(400).json({ error: 'No file uploaded, Please upload a CSV file' });
+    }
+
+    const products = [];
+    const filePath = file.path;
+
+    fs.createReadStream(filePath)
+        .pipe(csv.parse({ headers: true }))
+        .on('error', (error) => {
+            console.error(error);
+            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+            return res.status(500).json({ error: 'Error parsing CSV file' });
+        })
+        .on('data', (row) => {
+            if (row.name) {
+                const expDate = new Date(row.expirationDate);
+
+                if (!isNaN(expDate.getTime())) {
+                    products.push({
+                        name: row.name,
+                        quantity: parseInt(row.quantity) || 0,
+                        expirationDate: expDate,
+                        category: row.category || 'General',
+                        userId: req.userId
+                    });
+                }
+            }
+        })
+        .on('end', async () => {
+            try {
+                if (products.length === 0) {
+                    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+                    return res.status(400).json({
+                        error: "No valid products found in the CSV file. Check your date format (YYYY-MM-DD)."
+                    });
+                }
+
+                await Product.insertMany(products);
+
+                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
+                res.status(200).json({
+                    message: 'Successfully uploaded and added products',
+                    count: products.length
+                });
+            } catch (error) {
+                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+                res.status(500).json({
+                    error: error.message || 'Error inserting products into database'
+                });
+            }
+        });
+};
 
 module.exports = { 
     createProduct, 
@@ -282,5 +342,6 @@ module.exports = {
     getExpiringAlerts,
     getDashboardSummary,
     getMonthlyReport,
-    getCategories
+    getCategories,
+    uploadCSV
 };
