@@ -108,9 +108,10 @@ const LoginPage = () => {
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
+                    autoComplete="current-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10"
+                    className="pl-10 pr-10 no-password-reveal"
                     required
                     data-testid="login-password"
                   />

@@ -123,9 +123,10 @@ const SignupPage = () => {
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
+                    autoComplete="new-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10"
+                    className="pl-10 pr-10 no-password-reveal"
                     required
                     data-testid="signup-password"
                   />
@@ -148,9 +149,10 @@ const SignupPage = () => {
                     id="confirmPassword"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
+                    autoComplete="new-password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 no-password-reveal"
                     required
                     data-testid="signup-confirm-password"
                   />

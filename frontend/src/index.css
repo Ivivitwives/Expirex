@@ -157,6 +157,21 @@
   [data-debug-wrapper="true"] {
     display: contents !important;
   }
+
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear,
+  input[type="password"]::-webkit-password-reveal-button,
+  input[type="password"]::-webkit-textfield-decoration-button,
+  input[type="password"]::-webkit-textfield-decoration-container,
+  input[type="password"]::-webkit-credentials-auto-fill-button,
+  input.no-password-reveal::-webkit-password-reveal-button,
+  input.no-password-reveal::-webkit-textfield-decoration-button,
+  input.no-password-reveal::-webkit-textfield-decoration-container,
+  input.no-password-reveal::-webkit-credentials-auto-fill-button {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
 }
 
 /* Selection */

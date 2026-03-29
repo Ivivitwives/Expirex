@@ -1,4 +1,4 @@
-const User = require('../models/UserModel');
+const User = require('../models/usermodel');
 const jwt = require('jsonwebtoken');
 
 const ADMIN_EMAIL = 'expirex25@gmail.com';

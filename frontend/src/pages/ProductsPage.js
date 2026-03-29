@@ -58,8 +58,8 @@ const ProductsPage = () => {
     try {
       const params = new URLSearchParams();
       if (search) params.append('search', search);
-      if (statusFilter) params.append('status', statusFilter);
-      if (categoryFilter) params.append('category', categoryFilter);
+      if (statusFilter && statusFilter !== 'all') params.append('status', statusFilter);
+      if (categoryFilter && categoryFilter !== 'all') params.append('category', categoryFilter);
       params.append('sortBy', sortBy);
       
       const response = await api.get(`/products?${params.toString()}`);
@@ -98,8 +98,8 @@ const ProductsPage = () => {
   useEffect(() => {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
-    if (statusFilter) params.set('status', statusFilter);
-    if (categoryFilter) params.set('category', categoryFilter);
+    if (statusFilter && statusFilter !== 'all') params.set('status', statusFilter);
+    if (categoryFilter && categoryFilter !== 'all') params.set('category', categoryFilter);
     setSearchParams(params);
   }, [search, statusFilter, categoryFilter, setSearchParams]);
 
@@ -109,6 +109,11 @@ const ProductsPage = () => {
     
     if (!formData.name || !formData.expirationDate || !formData.category) {
       setFormError('Please fill in all required fields');
+      return;
+    }
+
+    if (isExpiredExpirationDate(formData.expirationDate)) {
+      setFormError('Your product is expired. Please select a future expiration date.');
       return;
     }
     
@@ -124,7 +129,7 @@ const ProductsPage = () => {
       fetchCategories();
       fetchAlerts();
     } catch (error) {
-      setFormError(error.response?.data?.detail || 'Failed to add product');
+      setFormError(error.response?.data?.error || error.response?.data?.detail || 'Failed to add product');
     } finally {
       setSubmitting(false);
     }
@@ -136,6 +141,11 @@ const ProductsPage = () => {
     
     if (!formData.name || !formData.expirationDate || !formData.category) {
       setFormError('Please fill in all required fields');
+      return;
+    }
+
+    if (isExpiredExpirationDate(formData.expirationDate)) {
+      setFormError('Your product is expired. Please select a future expiration date.');
       return;
     }
     
@@ -150,7 +160,7 @@ const ProductsPage = () => {
       fetchProducts();
       fetchAlerts();
     } catch (error) {
-      setFormError(error.response?.data?.detail || 'Failed to update product');
+      setFormError(error.response?.data?.error || error.response?.data?.detail || 'Failed to update product');
     } finally {
       setSubmitting(false);
     }
@@ -201,6 +211,15 @@ const ProductsPage = () => {
     }
   };
 
+  const isExpiredExpirationDate = (date) => {
+    if (!date) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const expDate = new Date(date);
+    expDate.setHours(0, 0, 0, 0);
+    return expDate <= today;
+  };
+
   const clearFilters = () => {
     setSearch('');
     setStatusFilter('');
@@ -208,7 +227,10 @@ const ProductsPage = () => {
     setSortBy('expiration');
   };
 
-  const hasActiveFilters = search || statusFilter || categoryFilter;
+  const hasActiveFilters =
+    search ||
+    (statusFilter && statusFilter !== 'all') ||
+    (categoryFilter && categoryFilter !== 'all');
 
   return (
     <Layout notifications={alerts}>
@@ -271,6 +293,7 @@ const ProductsPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="alerts">Alerts</SelectItem>
                   <SelectItem value="Safe">Safe</SelectItem>
                   <SelectItem value="Near Expiry">Near Expiry</SelectItem>
                   <SelectItem value="Expired">Expired</SelectItem>

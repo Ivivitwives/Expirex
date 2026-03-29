@@ -167,7 +167,7 @@ const DashboardPage = () => {
           <Card className="lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between pb-4">
               <CardTitle className="font-heading">Recent Alerts</CardTitle>
-              <Link to="/products">
+              <Link to="/products?status=alerts">
                 <Button variant="ghost" size="sm" data-testid="view-all-alerts">
                   View all <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>

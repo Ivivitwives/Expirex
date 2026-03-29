@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/UserModel');
+const User = require('../models/usermodel');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'expirex-secret-key-2024';
 

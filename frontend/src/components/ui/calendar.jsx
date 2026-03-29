@@ -11,9 +11,16 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }) {
+  const currentYear = new Date().getFullYear();
+  const fromMonth = new Date(currentYear - 10, 0, 1);
+  const toMonth = new Date(currentYear + 10, 11, 31);
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
+      captionLayout="dropdown-buttons"
+      fromMonth={fromMonth}
+      toMonth={toMonth}
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
