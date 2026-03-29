@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const adminRoutes = require('./routes/adminroutes');
 const productsRoutes = require('./routes/products');
 const authRoutes = require('./routes/auth');
 
@@ -17,6 +18,10 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/api/admin', adminRoutes);
+app.use('/api/products', productsRoutes);
+app.use('/api/auth', authRoutes);
+
 // Health check route
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Expirex API is running' });
@@ -26,9 +31,6 @@ app.get('/api/health', (req, res) => {
 app.get('/api', (req, res) => {
     res.json({ message: 'Welcome to Expirex API' });
 });
-
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productsRoutes);
 
 // Connect to MongoDB
 const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL;

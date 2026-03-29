@@ -19,6 +19,24 @@ const userSchema = new Schema({
         required: true,
         trim: true
     },
+
+    // ✅ ADD THIS (Admin system)
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
+
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+
+    lastLogin: {
+        type: Date,
+        default: null
+    },
+
     settings: {
         expiryThreshold: {
             type: Number,
@@ -29,7 +47,9 @@ const userSchema = new Schema({
             default: 'light'
         }
     }
+
 }, { timestamps: true });
+
 
 // Hash password before saving
 userSchema.pre('save', async function() {
@@ -37,7 +57,6 @@ userSchema.pre('save', async function() {
     
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    
 });
 
 // Method to compare password

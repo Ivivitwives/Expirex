@@ -1,32 +1,31 @@
 const User = require('../models/usermodel');
 const jwt = require('jsonwebtoken');
 
+const ADMIN_EMAIL = 'expirex25@gmail.com';
 const JWT_SECRET = process.env.JWT_SECRET || 'expirex-secret-key-2024';
 const JWT_EXPIRES_IN = '7d';
 
-// Generate JWT Token
+// Generate Token
 const generateToken = (userId) => {
     return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
 
-// Sign Up
+// SIGNUP
 const signup = async (req, res) => {
     const { email, password, username } = req.body;
 
     try {
-        // Check if user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ error: 'Email already registered' });
         }
 
-        // Validate password length
         if (password.length < 6) {
             return res.status(400).json({ error: 'Password must be at least 6 characters' });
         }
 
-        // Create new user
-        const user = await User.create({ email, password, username });
+        const role = email.toLowerCase() === ADMIN_EMAIL ? 'admin' : 'user';
+        const user = await User.create({ email, password, username, role });
         const token = generateToken(user._id);
 
         res.status(201).json({
@@ -35,6 +34,7 @@ const signup = async (req, res) => {
                 id: user._id,
                 email: user.email,
                 username: user.username,
+                role: user.role,
                 settings: user.settings
             }
         });
@@ -43,22 +43,28 @@ const signup = async (req, res) => {
     }
 };
 
-// Login
+// LOGIN
 const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Find user by email
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        // Check password
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
+
+        // Ensure the fixed admin account stays admin
+        if (user.email.toLowerCase() === ADMIN_EMAIL && user.role !== 'admin') {
+            user.role = 'admin';
+        }
+
+        user.lastLogin = new Date();
+        await user.save();
 
         const token = generateToken(user._id);
 
@@ -68,6 +74,7 @@ const login = async (req, res) => {
                 id: user._id,
                 email: user.email,
                 username: user.username,
+                role: user.role, // ✅
                 settings: user.settings
             }
         });
@@ -76,7 +83,7 @@ const login = async (req, res) => {
     }
 };
 
-// Get current user
+// GET CURRENT USER
 const getMe = async (req, res) => {
     try {
         res.status(200).json({
@@ -84,6 +91,7 @@ const getMe = async (req, res) => {
                 id: req.user._id,
                 email: req.user.email,
                 username: req.user.username,
+                role: req.user.role, // ✅
                 settings: req.user.settings
             }
         });
@@ -92,7 +100,7 @@ const getMe = async (req, res) => {
     }
 };
 
-// Update user settings
+// UPDATE SETTINGS
 const updateSettings = async (req, res) => {
     const { expiryThreshold, theme } = req.body;
 
@@ -106,7 +114,7 @@ const updateSettings = async (req, res) => {
         }
 
         const user = await User.findByIdAndUpdate(
-            req.userId,
+            req.user._id,
             { $set: updates },
             { new: true }
         ).select('-password');
@@ -116,6 +124,7 @@ const updateSettings = async (req, res) => {
                 id: user._id,
                 email: user.email,
                 username: user.username,
+                role: user.role,
                 settings: user.settings
             }
         });
@@ -124,4 +133,4 @@ const updateSettings = async (req, res) => {
     }
 };
 
-module.exports = { signup, login, getMe, updateSettings };
+module.exports = { signup, login, getMe, updateSettings, generateToken };
