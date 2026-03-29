@@ -1,3 +1,5 @@
+# Legacy FastAPI backend implementation.
+# Use the Node.js backend in /backend/server.js instead.
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials

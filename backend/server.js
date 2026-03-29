@@ -1,42 +1,57 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const adminRoutes = require('./routes/adminroutes');
 const productsRoutes = require('./routes/products');
 const authRoutes = require('./routes/auth');
+const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
-// Middleware
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL;
+const PORT = Number(process.env.PORT || 8001);
+const JWT_SECRET = process.env.JWT_SECRET;
+
+const requiredEnvs = ['MONGO_URI', 'JWT_SECRET'];
+const missingEnvs = requiredEnvs.filter((key) => !process.env[key] && !(key === 'MONGO_URI' && process.env.MONGO_URL));
+if (missingEnvs.length) {
+    console.error(`Missing required environment variables: ${missingEnvs.join(', ')}`);
+    process.exit(1);
+}
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-    console.log(req.path, req.method);
-    next();
-});
+if (NODE_ENV !== 'production') {
+    app.use((req, res, next) => {
+        console.info(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+        next();
+    });
+}
 
 app.use('/api/admin', adminRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/auth', authRoutes);
 
-// Health check route
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Expirex API is running' });
 });
 
-// Routes
 app.get('/api', (req, res) => {
     res.json({ message: 'Welcome to Expirex API' });
 });
 
-// Connect to MongoDB
-const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL;
-const PORT = process.env.PORT || 8001;
+app.use((req, res) => {
+    res.status(404).json({ error: 'Not Found' });
+});
 
-mongoose.connect(MONGO_URI)
+app.use(errorHandler);
+
+mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log('Connected to MongoDB');
         app.listen(PORT, '0.0.0.0', () => {
@@ -45,8 +60,5 @@ mongoose.connect(MONGO_URI)
     })
     .catch((error) => {
         console.error('MongoDB connection error:', error);
-        // Start server anyway for health checks
-        app.listen(PORT, '0.0.0.0', () => {
-            console.log(`Server listening on port ${PORT} (DB not connected)`);
-        });
+        process.exit(1);
     });

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const csv = require('fast-csv');
-const Product = require('../models/productmodel');
+const Product = require('../models/ProductModel');
 const mongoose = require('mongoose');
 
 // CREATE a new product
@@ -205,99 +205,112 @@ const getMonthlyReport = async (req, res) => {
 };
 
 // GET a single product
-const getProduct = async (req, res) => {
-    const { id } = req.params;
-    const threshold = req.user?.settings?.expiryThreshold || 7;
-    
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'No such product' });
+const getProduct = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const threshold = req.user?.settings?.expiryThreshold || 7;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(404).json({ error: 'No such product' });
+        }
+
+        const product = await Product.findOne({ _id: id, userId: req.userId });
+        if (!product) {
+            return res.status(404).json({ error: 'No such product' });
+        }
+
+        const productObj = product.toObject();
+        productObj.status = getStatus(product.expirationDate, threshold);
+
+        res.status(200).json(productObj);
+    } catch (error) {
+        next(error);
     }
-    
-    const product = await Product.findOne({ _id: id, userId: req.userId });
-    if (!product) {
-        return res.status(404).json({ error: 'No such product' });
-    }
-    
-    const productObj = product.toObject();
-    productObj.status = getStatus(product.expirationDate, threshold);
-    
-    res.status(200).json(productObj);
 };
 
 // DELETE a product
-const deleteProduct = async (req, res) => {
-    const { id } = req.params;
-    
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'No such product' });
+const deleteProduct = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(404).json({ error: 'No such product' });
+        }
+
+        const product = await Product.findOneAndDelete({ _id: id, userId: req.userId });
+        if (!product) {
+            return res.status(404).json({ error: 'No such product' });
+        }
+
+        res.status(200).json(product);
+    } catch (error) {
+        next(error);
     }
-    
-    const product = await Product.findOneAndDelete({ _id: id, userId: req.userId });
-    if (!product) {
-        return res.status(404).json({ error: 'No such product' });
-    }
-    
-    res.status(200).json(product);
 };
 
 // UPDATE a product
-const updateProduct = async (req, res) => {
-    const { id } = req.params;
-    const threshold = req.user?.settings?.expiryThreshold || 7;
-    
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'No such product' });
-    }
-    
-    const product = await Product.findOneAndUpdate(
-        { _id: id, userId: req.userId }, 
-        { ...req.body },
-        { new: true }
-    );
+const updateProduct = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const threshold = req.user?.settings?.expiryThreshold || 7;
 
-    if (!product) {
-        return res.status(400).json({ error: 'No such product' });
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(404).json({ error: 'No such product' });
+        }
+
+        const product = await Product.findOneAndUpdate(
+            { _id: id, userId: req.userId }, 
+            { ...req.body },
+            { new: true }
+        );
+
+        if (!product) {
+            return res.status(400).json({ error: 'No such product' });
+        }
+
+        const productObj = product.toObject();
+        productObj.status = getStatus(product.expirationDate, threshold);
+
+        res.status(200).json(productObj);
+    } catch (error) {
+        next(error);
     }
-    
-    const productObj = product.toObject();
-    productObj.status = getStatus(product.expirationDate, threshold);
-    
-    res.status(200).json(productObj);
 };
 
 // GET all categories
-const getCategories = async (req, res) => {
+const getCategories = async (req, res, next) => {
     try {
         const categories = await Product.distinct('category', { userId: req.userId });
         res.status(200).json(categories);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 };
 //UPLOAD CSV file
-const uploadCSV = async (req, res) => {
-    const file = req.file;
+const uploadCSV = async (req, res, next) => {
+    try {
+        const file = req.file;
 
-    if (!file) {
-        return res.status(400).json({ error: 'No file uploaded, Please upload a CSV file' });
-    }
+        if (!file) {
+            return res.status(400).json({ error: 'No file uploaded, Please upload a CSV file' });
+        }
 
-    const products = [];
-    const filePath = file.path;
+        const products = [];
+        const filePath = file.path;
 
-    fs.createReadStream(filePath)
-        .pipe(csv.parse({ headers: true }))
-        .on('error', (error) => {
-            console.error(error);
-            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-            return res.status(500).json({ error: 'Error parsing CSV file' });
-        })
-        .on('data', (row) => {
-            if (row.name) {
-                const expDate = new Date(row.expirationDate);
+        fs.createReadStream(filePath)
+            .pipe(csv.parse({ headers: true }))
+            .on('error', (error) => {
+                console.error(error);
+                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+                next(error);
+            })
+            .on('data', (row) => {
+                if (row.name) {
+                    const expDate = new Date(row.expirationDate);
 
-                if (!isNaN(expDate.getTime())) {
-                    products.push({
+                    if (!isNaN(expDate.getTime())) {
+                        products.push({
                         name: row.name,
                         quantity: parseInt(row.quantity) || 0,
                         expirationDate: expDate,
@@ -326,11 +339,12 @@ const uploadCSV = async (req, res) => {
                 });
             } catch (error) {
                 if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-                res.status(500).json({
-                    error: error.message || 'Error inserting products into database'
-                });
+                next(error);
             }
         });
+    } catch (error) {
+        next(error);
+    }
 };
 
 module.exports = { 
