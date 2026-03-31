@@ -5,12 +5,16 @@ const mongoose = require('mongoose')
 const productsRoutes = require('./routes/products')
 const apiRoutes = require('./routes/api')
 
-
-//express app
 const app = express()
 
-//middleware
-app.use(cors())
+// middleware
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://expirex-phi.vercel.app'
+  ],
+  credentials: true
+}))
 app.use(express.json())
 
 app.use((req, res, next) => {
@@ -18,15 +22,15 @@ app.use((req, res, next) => {
   next()
 })
 
-//routes
+// routes
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to my soul society'})
+  res.json({ message: 'Welcome to my soul society' })
 })
 
 app.use('/api/products', productsRoutes)
 app.use('/api', apiRoutes)
 
-//connect to db
+// connect to db
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     app.listen(process.env.PORT, () => {
