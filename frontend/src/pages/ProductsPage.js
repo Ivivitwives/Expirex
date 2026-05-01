@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { 
   Plus, 
   Search, 
@@ -26,6 +26,8 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+const PRODUCT_NAME_MAX_LENGTH = 15;
 
 const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -106,9 +108,15 @@ const ProductsPage = () => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     setFormError('');
+    const productName = formData.name.trim();
     
-    if (!formData.name || !formData.expirationDate || !formData.category) {
+    if (!productName || !formData.expirationDate || !formData.category) {
       setFormError('Please fill in all required fields');
+      return;
+    }
+
+    if (productName.length > PRODUCT_NAME_MAX_LENGTH) {
+      setFormError(`Product name must be ${PRODUCT_NAME_MAX_LENGTH} characters or less.`);
       return;
     }
 
@@ -121,7 +129,8 @@ const ProductsPage = () => {
     try {
       await api.post('/products', {
         ...formData,
-        expirationDate: formData.expirationDate.toISOString()
+        name: productName,
+        expirationDate: format(formData.expirationDate, 'yyyy-MM-dd')
       });
       setIsAddModalOpen(false);
       setFormData({ name: '', quantity: 1, expirationDate: null, category: '' });
@@ -138,9 +147,15 @@ const ProductsPage = () => {
   const handleEditProduct = async (e) => {
     e.preventDefault();
     setFormError('');
+    const productName = formData.name.trim();
     
-    if (!formData.name || !formData.expirationDate || !formData.category) {
+    if (!productName || !formData.expirationDate || !formData.category) {
       setFormError('Please fill in all required fields');
+      return;
+    }
+
+    if (productName.length > PRODUCT_NAME_MAX_LENGTH) {
+      setFormError(`Product name must be ${PRODUCT_NAME_MAX_LENGTH} characters or less.`);
       return;
     }
 
@@ -153,7 +168,8 @@ const ProductsPage = () => {
     try {
       await api.patch(`/products/${selectedProduct._id}`, {
         ...formData,
-        expirationDate: formData.expirationDate.toISOString()
+        name: productName,
+        expirationDate: format(formData.expirationDate, 'yyyy-MM-dd')
       });
       setIsEditModalOpen(false);
       setSelectedProduct(null);
@@ -451,9 +467,13 @@ const ProductsPage = () => {
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  maxLength={PRODUCT_NAME_MAX_LENGTH}
                   placeholder="e.g., Milk, Bread, Yogurt"
                   data-testid="product-name-input"
                 />
+                <p className="text-xs text-muted-foreground text-right">
+                  {formData.name.length}/{PRODUCT_NAME_MAX_LENGTH}
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -546,8 +566,12 @@ const ProductsPage = () => {
                   id="edit-name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  maxLength={PRODUCT_NAME_MAX_LENGTH}
                   data-testid="edit-product-name-input"
                 />
+                <p className="text-xs text-muted-foreground text-right">
+                  {formData.name.length}/{PRODUCT_NAME_MAX_LENGTH}
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

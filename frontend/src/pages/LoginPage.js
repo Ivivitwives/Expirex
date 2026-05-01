@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, EyeOff, Mail, Lock, Sun, Moon, Package } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Sun, Moon } from 'lucide-react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -63,9 +63,7 @@ const LoginPage = () => {
       <div className="w-full max-w-md animate-fade-in">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4">
-            <Package className="w-8 h-8 text-primary" />
-          </div>
+          <img src="/mylogo.png" alt="Expirex logo" className="mx-auto mb-4 h-16 w-16 rounded-2xl shadow-lg object-contain" />
           <h1 className="text-3xl font-heading font-bold text-foreground">Expirex</h1>
           <p className="text-muted-foreground mt-1">Expiration Monitoring System</p>
         </div>

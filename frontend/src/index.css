@@ -178,3 +178,30 @@
 ::selection {
   @apply bg-primary/20;
 }
+
+/* Ensure form controls inside popovers (calendar, selects) are visible in dark mode */
+@layer base {
+  .bg-popover select,
+  .bg-popover input,
+  .bg-popover textarea,
+  .bg-popover .rdp-caption select,
+  .bg-popover .rdp-caption input {
+    color: hsl(var(--popover-foreground)) !important;
+    background-color: hsl(var(--popover)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 0.25rem !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .bg-popover select option {
+    color: hsl(var(--popover-foreground)) !important;
+    background: hsl(var(--popover)) !important;
+  }
+
+  /* Hide default dropdown arrow on some browsers to allow consistent styling */
+  .bg-popover select::-ms-expand {
+    display: none;
+  }
+}

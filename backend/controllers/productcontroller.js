@@ -3,9 +3,16 @@ const csv = require('fast-csv');
 const Product = require('../models/productmodel');
 const mongoose = require('mongoose');
 
+const PRODUCT_NAME_MAX_LENGTH = 15;
+
 // CREATE a new product
 const createProduct = async (req, res) => {
     const { name, quantity, expirationDate, category } = req.body;
+    const trimmedName = typeof name === 'string' ? name.trim() : '';
+
+    if (trimmedName.length > PRODUCT_NAME_MAX_LENGTH) {
+        return res.status(400).json({ error: `Product name must be ${PRODUCT_NAME_MAX_LENGTH} characters or less.` });
+    }
 
     if (!expirationDate || isExpiredDate(expirationDate)) {
         return res.status(400).json({ error: 'Your product is expired.' });
@@ -13,7 +20,7 @@ const createProduct = async (req, res) => {
 
     try {
         const product = await Product.create({ 
-            name, 
+            name: trimmedName || name,
             quantity, 
             expirationDate, 
             category,
@@ -34,10 +41,24 @@ const createProduct = async (req, res) => {
 const getStatus = (expirationDate, threshold = 7) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const expDate = new Date(expirationDate);
+    
+    // Parse the date string (format: "yyyy-MM-dd" or ISO string)
+    let expDate;
+    if (typeof expirationDate === 'string') {
+        if (expirationDate.includes('T')) {
+            // ISO string format - parse as UTC
+            expDate = new Date(expirationDate);
+        } else {
+            // Date-only format "yyyy-MM-dd" - create at midnight UTC
+            expDate = new Date(expirationDate + 'T00:00:00Z');
+        }
+    } else {
+        expDate = new Date(expirationDate);
+    }
+    
     expDate.setHours(0, 0, 0, 0);
     
-    if (expDate <= today) {
+    if (expDate < today) {
         return 'Expired';
     } else if (expDate <= new Date(today.getTime() + threshold * 24 * 60 * 60 * 1000)) {
         return 'Near Expiry';
@@ -49,9 +70,23 @@ const getStatus = (expirationDate, threshold = 7) => {
 const isExpiredDate = (expirationDate) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const expDate = new Date(expirationDate);
+    
+    // Parse the date string (format: "yyyy-MM-dd" or ISO string)
+    let expDate;
+    if (typeof expirationDate === 'string') {
+        if (expirationDate.includes('T')) {
+            // ISO string format - parse as UTC
+            expDate = new Date(expirationDate);
+        } else {
+            // Date-only format "yyyy-MM-dd" - create at midnight UTC
+            expDate = new Date(expirationDate + 'T00:00:00Z');
+        }
+    } else {
+        expDate = new Date(expirationDate);
+    }
+    
     expDate.setHours(0, 0, 0, 0);
-    return !isNaN(expDate.getTime()) && expDate <= today;
+    return !isNaN(expDate.getTime()) && expDate < today;
 };
 
 // GET all products with status
@@ -275,10 +310,19 @@ const updateProduct = async (req, res) => {
     if (req.body.expirationDate && isExpiredDate(req.body.expirationDate)) {
         return res.status(400).json({ error: 'Your product is expired.' });
     }
+
+    if (typeof req.body.name === 'string' && req.body.name.trim().length > PRODUCT_NAME_MAX_LENGTH) {
+        return res.status(400).json({ error: `Product name must be ${PRODUCT_NAME_MAX_LENGTH} characters or less.` });
+    }
+
+    const payload = { ...req.body };
+    if (typeof payload.name === 'string') {
+        payload.name = payload.name.trim();
+    }
     
     const product = await Product.findOneAndUpdate(
         { _id: id, userId: req.userId }, 
-        { ...req.body },
+        payload,
         { new: true }
     );
 

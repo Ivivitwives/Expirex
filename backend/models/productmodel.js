@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const PRODUCT_NAME_MAX_LENGTH = 15;
+
 const productSchema = new Schema({
     name: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        maxlength: [PRODUCT_NAME_MAX_LENGTH, `Product name must be ${PRODUCT_NAME_MAX_LENGTH} characters or less.`]
     },
     quantity: {
         type: Number,

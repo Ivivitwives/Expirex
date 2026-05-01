@@ -1,0 +1,13 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Expirex logo">
+  <defs>
+    <linearGradient id="logoGradient" x1="32" y1="28" x2="224" y2="228" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#10B981" />
+      <stop offset="1" stop-color="#047857" />
+    </linearGradient>
+  </defs>
+  <rect x="28" y="28" width="200" height="200" rx="52" fill="url(#logoGradient)" />
+  <path d="M82 92H168" stroke="white" stroke-width="18" stroke-linecap="round" />
+  <path d="M82 128H148" stroke="white" stroke-width="18" stroke-linecap="round" />
+  <path d="M82 164H168" stroke="white" stroke-width="18" stroke-linecap="round" />
+  <circle cx="178" cy="128" r="12" fill="white" />
+</svg>
